@@ -47,7 +47,7 @@ ROW FORMAT DELIMITED
   LINES TERMINATED BY '\n'
 ;
 
-LOAD DATA LOCAL INPATH '~/hive_training/sales_sample/sales.tsv' INTO TABLE SALES;
-LOAD DATA LOCAL INPATH '~/hive_training/sales_sample/sales_detail.tsv' INTO TABLE SALES_DETAIL;
-LOAD DATA LOCAL INPATH '~/hive_training/sales_sample/itemlist.tsv' INTO TABLE ITEM_MASTER;
-LOAD DATA LOCAL INPATH '~/hive_training/sales_sample/shoplist.tsv' INTO TABLE SHOP_MASTER;
+LOAD DATA LOCAL INPATH './sales_sample/sales.tsv' INTO TABLE SALES;
+LOAD DATA LOCAL INPATH './sales_sample/sales_detail.tsv' INTO TABLE SALES_DETAIL;
+LOAD DATA LOCAL INPATH './sales_sample/itemlist.tsv' INTO TABLE ITEM_MASTER;
+LOAD DATA LOCAL INPATH './sales_sample/shoplist.tsv' INTO TABLE SHOP_MASTER;

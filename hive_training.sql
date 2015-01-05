@@ -14,5 +14,21 @@ CREATE TABLE IF NOT EXISTS employees (
   COMMENT 'Home address'
   )
 COMMENT 'Description of the table'
+PARTITIONED BY (country STRING, state STRING)
 ;
 
+CREATE EXTERNAL TABLE IF NOT EXISTS stocks (
+  code STRING,
+  exchanges STRING,
+  symbol STRING,
+  ymd STRING,
+  price_open FLOAT,
+  price_high FLOAT,
+  price_low FLOAT,
+  price_close FLOAT,
+  volume INT,
+  price_adj_close FLOAT
+  )
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+LOCATION '/user/hidepin/data'
+;

@@ -1,3 +1,5 @@
+set hive.exec.dynamic.partition.mode=nonstrict;
+
 DROP DATABASE IF EXISTS financials CASCADE;
 
 CREATE DATABASE IF NOT EXISTS financials COMMENT 'Holds all financial tables';
@@ -14,7 +16,13 @@ CREATE TABLE IF NOT EXISTS employees (
   COMMENT 'Home address'
   )
 COMMENT 'Description of the table'
-PARTITIONED BY (country STRING, state STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+COLLECTION ITEMS TERMINATED BY '#'
+MAP KEYS TERMINATED BY ':'
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/hidepin/employee'
 ;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS stocks (
@@ -32,3 +40,53 @@ CREATE EXTERNAL TABLE IF NOT EXISTS stocks (
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
 LOCATION '/user/hidepin/data'
 ;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS staged_user (
+  name STRING,
+  phonetic STRING,
+  mail STRING,
+  gender STRING,
+  age INT,
+  birthday STRING,
+  marriage STRING,
+  blood_type STRING,
+  prefectures STRING,
+  prefectures_code INT,
+  tel_number STRING,
+  mobile_tel_number STRING,
+  carrier STRING,
+  eatting STRING
+  )
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+LOCATION '/user/hidepin/user'
+;
+
+
+CREATE TABLE IF NOT EXISTS user (
+  name STRING,
+  phonetic STRING,
+  mail STRING,
+  gender STRING,
+  age INT,
+  birthday STRING,
+  marriage STRING,
+  blood_type STRING,
+  prefectures STRING,
+  prefectures_code INT,
+  tel_number STRING,
+  mobile_tel_number STRING,
+  carrier STRING,
+  eatting STRING
+  )
+PARTITIONED BY (p_code INT)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+;
+
+--INSERT OVERWRITE TABLE user
+--PARTITION (p_code)
+--SELECT name, phonetic, mail, gender, age, birthday, marriage, blood_type, prefectures, prefectures_code, tel_number, mobile_tel_number, carrier, eatting, prefectures_code FROM staged_user; 
+
+INSERT OVERWRITE TABLE user
+PARTITION (p_code)
+SELECT *, prefectures_code FROM staged_user; 
+

@@ -25,6 +25,12 @@ STORED AS TEXTFILE
 LOCATION '/user/hidepin/employee'
 ;
 
+CREATE INDEX employees_index
+ON TABLE employees (name)
+AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler'
+WITH DEFERRED REBUILD
+;
+
 CREATE EXTERNAL TABLE IF NOT EXISTS stocks (
   code STRING,
   exchanges STRING,
@@ -90,3 +96,26 @@ INSERT OVERWRITE TABLE user
 PARTITION (p_code)
 SELECT *, prefectures_code FROM staged_user; 
 
+CREATE VIEW user_view AS
+  SELECT name, mail, age, birthday, prefectures, prefectures_code FROM user WHERE prefectures = '広島';
+
+CREATE EXTERNAL TABLE dynamictable(cols map<string,string>)
+ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ',' 
+  COLLECTION ITEMS TERMINATED BY '#'
+  MAP KEYS TERMINATED BY ':'
+STORED AS TEXTFILE
+LOCATION '/user/hidepin/dynamic'
+;
+
+CREATE VIEW orders(state, city, part) AS
+  SELECT cols["state"], cols["city"], cols["part"]
+  FROM dynamictable
+  WHERE cols["type"] = "request"
+;
+
+CREATE VIEW shipments(time, part) AS
+  SELECT cols["time"], cols["part"]
+  FROM dynamictable
+  WHERE cols["type"] = "response"
+;
